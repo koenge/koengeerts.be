@@ -1,0 +1,61 @@
+*{
+   margin: 0px;
+   padding: 0px;
+}
+
+body {
+   background-image:url('img/furley_bg.png');
+   font-family: 'Doppio One';
+   width: 960px;
+   margin: 0 auto;
+}
+
+#content {
+   
+   width: 960px;
+}
+
+#git_canvas {
+   position:relative;
+   margin: 0 auto;
+   min-height: 750px;
+   min-width: 960px;
+}
+
+a {
+   color: #000;
+   text-decoration: none;
+}
+
+a:hover {
+   color: #000;
+}
+
+.font30 {
+   font-size: 30px;
+}
+
+.font40 {
+   font-size: 40px;
+}
+
+
+/* FONT */
+@font-face {
+	font-family: 'Doppio One';
+	src: url('font/DoppioOne-Regular.ttf');
+}
+
+
+/* COLORS */
+.blue:hover {
+   color: #2daae1;
+}
+
+.green:hover {
+   color: #94C11e;
+}
+
+.orange:hover {
+   color: #f39200;
+}
