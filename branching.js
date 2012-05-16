@@ -1,4 +1,4 @@
-
+var debug = false;
 var orange="#f39200";
 var green="#94C11e";
 var blue="#2daae1";
@@ -35,6 +35,7 @@ window.onload = function () {
 	canvas.width = 960;
 	canvas.height= 750;
 	context = canvas.getContext("2d");             
+	//draw();
 	drawLandingPage();
 }
 
@@ -66,58 +67,49 @@ function draw() {
 *
 */
 function branch(fromX, fromY,context, direction, color,down,away, introLength, outroLength, text) {
-	if(direction == "down"){
-		direction = 1;
-	}else{
-		direction = -1;
-	}
-	curveX = fromX+introLength;
-	curveY = fromY;
-	var to2 = new Point(curveX+away, curveY+direction*down);
-	//var to2x = curveX+away;
-	//var to2y = curveY+direction*down;
-	var to1 = new Point(curveX+(to2.x-curveX)/2, curveY+(to2.y-curveY)/2);
-	//var to1x = curveX+(to2x-curveX)/2;
-	//var to1y = curveY+(to2y-curveY)/2;
-	var ctl1 = new Point(curveX+(to1.x-curveX)/2, curveY);
-	//var ctl1x = curveX+(to1x-curveX)/2
-	//var ctl1y = curveY;
+	direction = direction=="down"?1:-1;
+	curve = new Point(fromX+introLength, fromY);
+	var to2 = new Point(curve.x+away, curve.y+direction*down);
+	var to1 = new Point(curve.x+(to2.x-curve.x)/2, curve.y+(to2.y-curve.y)/2);
+	var ctl1 = new Point(curve.x+(to1.x-curve.x)/2, curve.y);
 	var ctl2 = new Point(to1.x+(to2.x-to1.x)/2, to2.y);
-	//var ctl2x = to1x+(to2x-to1x)/2;
-	//var ctl2y = to2y;
-	//alert("context.quadraticCurveTo("+ctl1x+","+ctl1y+","+to1x+","+to1y+");\ncontext.quadraticCurveTo("+ctl2x+","+ctl2y+","+to2x+","+to2y+");");
+
 	context.beginPath();
 	context.moveTo(fromX,fromY);
-	context.lineTo(curveX, curveY);
+	context.lineTo(curve.x, curve.y);
 	context.strokeStyle = color;
 	context.quadraticCurveTo(ctl1.x,ctl1.y, to1.x, to1.y);
 	context.quadraticCurveTo(ctl2.x, ctl2.y,to2.x,to2.y);
 	context.lineTo(to2.x+outroLength, to2.y);
 	context.stroke();
 	
-	/*drawProjectCircle(context, ctl1x, ctl1y, 3);
-	drawProjectCircle(context, ctl2x, ctl2y, 3);
-	drawProjectCircle(context, to1x, to1y, 3);
-	drawProjectCircle(context, curveX, curveY, 3);
-	drawProjectCircle(context, to2x, to2y, 3);*/
+	if (debug){
+	   drawProjectCircle(context, ctl1.x, ctl1.y, 3);
+   	drawProjectCircle(context, ctl2.x, ctl2.y, 3);
+   	drawProjectCircle(context, to1.x, to1.y, 3);
+   	drawProjectCircle(context, curve.x, curve.y, 3);
+   	drawProjectCircle(context, to2.x, to2.y, 3);
+   }
 	
 	//text
-		var angle1X = ctl1.x-9*(ctl1.x-curveX)/100;
-		var angle1Y = ctl1.y;
-		var angle2X = ctl2.x+9*(to2.x-ctl2.x)/100;
-		var angle2Y = ctl2.y;
-		
-		//drawProjectCircle(context, angle1X, angle1Y, 3);
-		//drawProjectCircle(context, angle2X, angle2Y, 3);
-		var angle = Math.atan( (angle2Y-angle1Y)/(angle2X-angle1X) );
+	   //define points where the angle needs to be computed with
+		var angle1 = new Point(ctl1.x-9*(ctl1.x-curve.x)/100,ctl1.y); // 9 procent to get a nice alignment
+		var angle2 = new Point (ctl2.x+9*(to2.x-ctl2.x)/100,ctl2.y);
+		if (debug){
+		   drawProjectCircle(context, angle1.x, angle1.y, 3);
+		   drawProjectCircle(context, angle2.x, angle2.y, 3);
+	   }
+	   
+		var angle = Math.atan( (angle2.y-angle1.y)/(angle2.x-angle1.x) ); //the angle to place the text at
 		context.save();
 		context.beginPath();
 		context.translate(to1.x,to1.y);
 		context.rotate(angle);
-		context.fillStyle = color ;
+		context.fillStyle = color;
 		context.font = "20px 'Doppio One' ";
+		
 		var textWidth = context.measureText(text).width;
-		var glue = 1;
+		var glue = 1; //how far the text will be from the line
 		context.textBaseline = "bottom";
 		context.textAlign = "center";
 		if(direction == -1){
@@ -132,6 +124,7 @@ function branch(fromX, fromY,context, direction, color,down,away, introLength, o
 		context.restore();
 }
 
+//draw a project-dot at x,y coordinates
 function drawProjectCircle(context, x,y, size, lineWidth){
 	context.save();
 	context.beginPath();
@@ -144,7 +137,9 @@ function drawProjectCircle(context, x,y, size, lineWidth){
 	context.restore();
 }
 
+//draw the landing page for the site
 function drawLandingPage(){
+   //position us in the middle of the canvas
 	context.translate(context.canvas.width/2, context.canvas.height);
 	context.rotate(-Math.PI/2);
 	context.beginPath();
@@ -167,79 +162,24 @@ function drawLandingPage(){
 	branch(0,10, context, "down", green, 100, 150, 300, 100, "");
 	context.stroke();
 	drawProjectCircle(context, 550,10+100, 7, 8);
-	
-	
-	//gradient
-	//context.save();
+
+   //root line
 	context.beginPath();
 	context.fillStyle = "#555";
 	context.fillRect(0, -45, 1, 90);
 	context.restore();
-	//draw the text ! Or maybe we just need to put those divs in the right place
 	
+	//move the texts to the right position
 	placeText();
 	
-	
-	//Koen Geerts
-	/*context.save();
-	context.beginPath();
-	context.translate(660,160);
-	context.rotate(Math.PI/2);
-	context.fillStyle = "black" ;
-	context.font = "40px 'Doppio One' ";
-	//context.font = "20px Arial";
-	var textWidth = context.measureText("Koen Geerts").width;
-	context.textBaseline = "alphabetic";
-	context.textAlign = "center";
-	context.fillText("Koen Geerts", 0,0, textWidth);
-	context.fill();
-	context.restore();*/
-	
-	
-	//portfolio
-	/*context.save();
-	context.beginPath();
-	context.font = "30px 'Doppio One' ";
-	//context.font = "20px Arial";
-	var textWidth = context.measureText("Portfolio").width;
-	context.translate(490,50-(textWidth+20));
-	context.rotate(Math.PI/2);
-	context.fillStyle = "black" ;
-
-	context.textBaseline = "alphabetic";
-	context.textAlign = "left";
-	context.fillText("Portfolio", 0,0, textWidth);
-	context.fill();
-	context.restore();*/
-	
-	/*//portfolio
-	context.save();
-	context.beginPath();
-	context.font = "30px 'Doppio One' ";
-	//context.font = "20px Arial";
-	var textWidth = context.measureText("About me").width;
-	context.translate(540, 270+20);
-	context.rotate(Math.PI/2);
-	context.fillStyle = "black" ;
-
-	context.textBaseline = "alphabetic";
-	context.textAlign = "left";
-	context.fillText("About me", 0,0, textWidth);
-	context.fill();
-	context.restore();*/
-	
 }
-window.onresize = placeText;
+
+window.onresize = placeText; // let's move the text along w/ browserwidth
 
 function placeText(){
 	var koen_geerts = document.getElementById("koen_geerts_div");
 	var portfolio = document.getElementById("portfolio_div");
 	var about_me = document.getElementById("about_me_div");
-	
-
-	//koen_geerts.width = getComputedWidth("koen_geerts_div");
-	//koen_geerts.height = getComputedHeight("koen_geerts_div");
-	
 	
 	koen_geerts.style.position = "absolute";
 	koen_geerts.style.top=(90-getComputedHeight("koen_geerts_div")) + "px";
