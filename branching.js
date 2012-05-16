@@ -41,6 +41,7 @@ window.onload = function () {
 
 //draw the git tree
 function draw() {
+   context.clearRect(0, 0, canvas.height, canvas.width);
 	context.lineWidth= 10;
 	
 	branch(100,300,context,"down", orange,50,200, 0, 50, "JAVA");
@@ -139,6 +140,7 @@ function drawProjectCircle(context, x,y, size, lineWidth){
 
 //draw the landing page for the site
 function drawLandingPage(){
+   context.save();
    //position us in the middle of the canvas
 	context.translate(context.canvas.width/2, context.canvas.height);
 	context.rotate(-Math.PI/2);
@@ -171,7 +173,7 @@ function drawLandingPage(){
 	
 	//move the texts to the right position
 	placeText();
-	
+	context.restore();
 }
 
 window.onresize = placeText; // let's move the text along w/ browserwidth
@@ -184,6 +186,12 @@ function placeText(){
 	koen_geerts.style.position = "absolute";
 	koen_geerts.style.top=(90-getComputedHeight("koen_geerts_div")) + "px";
 	koen_geerts.style.left=(canvas.offsetLeft + canvas.width/2-getComputedWidth("koen_geerts_div")/2)+ "px";
+	koen_geerts.onclick = function(){
+	   draw();
+	   koen_geerts.style.display = "none";
+	   portfolio.style.display = "none";
+	   about_me.style.display = "none";
+	};
 	
 	portfolio.style.position = "absolute";
 	portfolio.style.top=(260-getComputedHeight("portfolio_div")+6) + "px";
